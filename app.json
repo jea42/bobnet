@@ -1,25 +1,24 @@
 {
   "name": "BobNet Email Simulator",
-  "description": "Heroku app to simulate email opens/clicks from inbound emails via Mailgun (FastAPI + RabbitMQ).",
+  "description": "Simulates email opens/clicks from inbound emails. Rust-based.",
   "repository": "",
-  "keywords": ["fastapi", "heroku", "mailgun", "rabbitmq", "cloudamqp"],
+  "keywords": ["rust", "heroku", "cloudflare", "mailgun", "rabbitmq", "cloudamqp"],
   "env": {
     "CLOUDAMQP_URL": {
       "description": "(required) RabbitMQ connection URL from CloudAMQP. Format: amqps://user:pass@host/vhost",
       "required": true
     },
+    "CLOUDFLARE_AUTH_TOKEN": {
+      "description": "(recommended) Shared secret for Cloudflare Worker webhook authentication.",
+      "required": false
+    },
     "MAILGUN_SIGNING_KEY": {
-      "description": "(optional) Mailgun HTTP webhook signing key for signature verification. Get from Mailgun dashboard > Settings > API Security.",
+      "description": "(optional) Mailgun HTTP webhook signing key.",
       "required": false
     },
     "MAILGUN_DOMAIN": {
-      "description": "(optional) Restrict Mailgun webhook to recipients at this domain (e.g., inbound.example.com).",
+      "description": "(optional) Restrict Mailgun webhook to this domain.",
       "required": false
-    },
-    "SIMULATE_WITH_BROWSER": {
-      "description": "Use headless browser for opens (false = direct fetch).",
-      "required": false,
-      "value": "false"
     },
     "SIMULATE_OPEN_PROBABILITY": {"value": "0.7"},
     "SIMULATE_CLICK_PROBABILITY": {"value": "0.3"},
@@ -30,10 +29,11 @@
   },
   "formation": {
     "web": {"quantity": 1, "size": "basic"},
-    "worker": {"quantity": 1, "size": "basic"}
+    "processor": {"quantity": 1, "size": "basic"},
+    "rust-worker": {"quantity": 1, "size": "basic"}
   },
   "addons": [],
   "buildpacks": [
-    {"url": "heroku/python"}
+    {"url": "https://github.com/emk/heroku-buildpack-rust"}
   ]
 }
